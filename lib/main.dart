@@ -7,13 +7,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 이미지 로드
-  var backgroundSprite = await Flame.images.loadAll(["Backgrounds.png"]);
+  var sprites = await Flame.images.loadAll(["Backgrounds.png", "Player.png"]);
 
   runApp(MaterialApp(
     title: 'Flame Game',
     home: GestureDetector(
       child: Scaffold(
-        body: GameWrapper(MyGame(backgroundSprite[0])),
+        body: GameWrapper(MyGame(sprites[0], sprites[1])),
       ),
     ),
   ));

@@ -1,16 +1,20 @@
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame_game/components/background.dart';
+import 'package:flame_game/components/player.dart';
 import 'package:flame_game/main.dart';
 
 class MyGame extends FlameGame {
   final Image backgroundSprite;
+  final Image playerSprite;
+
   late Background background;
+  late Player player;
 
-  MyGame(this.backgroundSprite) {}
+  MyGame(this.backgroundSprite, this.playerSprite) {}
 
-  void initPositions(Image backgroundSprite) {
-    //
+  void initPositions() {
+    player.setPosition((size[0] / 2) - 40, size[1] - 70);
   }
 
   @override
@@ -19,11 +23,18 @@ class MyGame extends FlameGame {
 
     Singleton().screenSize = size;
     background = Background(backgroundSprite);
+    player = Player(playerSprite);
 
-    initPositions(backgroundSprite);
+    initPositions();
 
-    add(background);
-    //this..add(background)
-    //..add(background);
+    this
+      ..add(background)
+      ..add(player);
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    player.playerUpdate(dt);
   }
 }
