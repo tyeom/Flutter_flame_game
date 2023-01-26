@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/flame.dart';
+import 'package:flame_game/components/bullet.dart';
 import 'package:flame_game/game/my_game.dart';
 
 enum PlayerDirection { go, left, right }
@@ -64,9 +65,21 @@ class Player extends PositionComponent with DragCallbacks, HasGameRef<MyGame> {
     add(_playerComponent);
   }
 
+  double bulletTime = 0;
+
   @override
   void update(double dt) {
     super.update(dt);
+
+    bulletTime += dt;
+    if (bulletTime < 0.3) return;
+    bulletTime = 0;
+
+    Bullet bullet = Bullet()
+      ..size = Vector2(19, 25)
+      ..position = position.clone()
+      ..anchor = Anchor.center;
+    gameRef.add(bullet);
   }
 
   @override

@@ -8,7 +8,7 @@ void main() async {
 
   // 이미지 로드
   await Flame.images
-      .loadAll(["Backgrounds.png", "Background_Grid.png", "Player.png"]);
+      .loadAll(["Backgrounds.png", "Background_Grid.png", "Player.png", "Bullets.png"]);
 
   // runApp(MaterialApp(
   //   title: 'Flame Game',
