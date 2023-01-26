@@ -7,15 +7,21 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 이미지 로드
-  var sprites = await Flame.images.loadAll(["Backgrounds.png", "Player.png"]);
+  await Flame.images
+      .loadAll(["Backgrounds.png", "Background_Grid.png", "Player.png"]);
+
+  // runApp(MaterialApp(
+  //   title: 'Flame Game',
+  //   home: GestureDetector(
+  //     child: Scaffold(
+  //       body: GameWrapper(MyGame()),
+  //     ),
+  //   ),
+  // ));
 
   runApp(MaterialApp(
     title: 'Flame Game',
-    home: GestureDetector(
-      child: Scaffold(
-        body: GameWrapper(MyGame(sprites[0], sprites[1])),
-      ),
-    ),
+    home: GameWrapper(MyGame()),
   ));
 }
 
@@ -34,6 +40,9 @@ class Singleton {
   static final Singleton _instance = Singleton._privateConstructor();
 
   late final Vector2? screenSize;
+  double get ground01Speed => 120;
+  double get ground02Speed => 220;
+  double get ground03Speed => 320;
 
   factory Singleton() {
     return _instance;
