@@ -148,19 +148,19 @@ class Player extends PositionComponent
     }
 
     // 하단 범위 초과 금지
-    if (position.y >= gameRef.size[1] - 70) {
+    if (position.y >= gameRef.size[1] - 50) {
       position.y -= 10;
       return;
     }
 
     // 좌측 범위 초과 금지
-    if (position.x <= 150) {
+    if (position.x <= 50) {
       position.x += 10;
       return;
     }
 
     // 우측 범위 초과 금지
-    if (position.x >= gameRef.size[0] - 150) {
+    if (position.x >= gameRef.size[0] - 50) {
       position.x -= 10;
       return;
     }
@@ -217,6 +217,7 @@ class Player extends PositionComponent
 
   void destroy() {
     removeFromParent();
+    gameRef.gameOver();
   }
 }
 

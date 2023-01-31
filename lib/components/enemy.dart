@@ -93,11 +93,6 @@ abstract class Enemy extends SpriteGroupComponent
       // 총알에 맞았을때 Sprite 변경
       current = 2;
     }
-    // 플레이어와 충돌시 게임오버
-    else if (other is Player) {
-      destroy(isGameOver: true);
-      gameRef.gameOver();
-    }
   }
 
   Vector2 getRandomVector() {
@@ -143,7 +138,7 @@ abstract class Enemy extends SpriteGroupComponent
 
     // boss 처리 완료시 게임오버
     if (enemyData.isBoss) {
-      gameRef.gameOver();
+      gameRef.gameOver(isLastBoss: true);
     }
   }
 }

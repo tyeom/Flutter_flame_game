@@ -9,13 +9,9 @@ final Random _rand = Random();
 class ItemManager extends Component with HasGameRef<MyGame> {
   late Timer _itemTimer;
   final Random _random = Random();
-  // 아이템 표시 횟수
-  final Map<String, int> _itemDisplayCount = {
-    'powerup': 0,
-  };
 
   ItemManager() : super() {
-    _itemTimer = Timer(10, onTick: _enemyTick, repeat: true);
+    _itemTimer = Timer(15, onTick: _enemyTick, repeat: true);
   }
 
   @override
@@ -39,13 +35,12 @@ class ItemManager extends Component with HasGameRef<MyGame> {
   void _enemyTick() {
     if (gameRef.buildContext == null) return;
 
-    // 0 ~ 1 사이 난수 생성 * 스크린 너비
-    // 스크린 너비 사이즈 만큼 랜덤 X 위치
-    Vector2 position = Vector2(_random.nextDouble() * gameRef.size.x, 0);
+    // powerup 아이템은 최대 power 20이 되면 표시 안되도록
+    if (gameRef.gameManager.bulletPowerPoint < 20) {
+      // 0 ~ 1 사이 난수 생성 * 스크린 너비
+      // 스크린 너비 사이즈 만큼 랜덤 X 위치
+      Vector2 position = Vector2(_random.nextDouble() * gameRef.size.x, 0);
 
-    // powerup 아이템 최대 3개 까지 표시
-    int powerUpItemCurrentCnt = _itemDisplayCount['powerup']!;
-    if (powerUpItemCurrentCnt <= 3) {
       Item powerUpgradeItem = PowerUpgradeItem();
 
       // 컴포넌트가 화면안에 유지 되도록 고정
@@ -57,9 +52,6 @@ class ItemManager extends Component with HasGameRef<MyGame> {
       powerUpgradeItem.anchor = Anchor.center;
       powerUpgradeItem.position = position;
       gameRef.add(powerUpgradeItem);
-
-      powerUpItemCurrentCnt++;
-      _itemDisplayCount["powerup"] = powerUpItemCurrentCnt;
     }
   }
 

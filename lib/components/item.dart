@@ -45,7 +45,8 @@ abstract class Item extends SpriteComponent
 
       // 파워 업 아이템
       if (this is PowerUpgradeItem) {
-        gameRef.gameManager.upgradePowrerPoint(bulletPowerPoint);
+        gameRef.gameManager.upgradePowrerPoint(
+            gameRef.gameManager.bulletPowerPoint + bulletPowerPoint);
       }
     }
   }

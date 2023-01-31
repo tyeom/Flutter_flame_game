@@ -82,8 +82,10 @@ class MyGame extends FlameGame
     }
   }
 
-  void gameOver() {
-    _player.destroy();
+  void gameOver({bool isLastBoss = false}) {
+    if (isLastBoss) {
+      _player.removeFromParent();
+    }
     _enemyManager.destroy();
     _itemManager.destroy();
     _gameManager.reset();
