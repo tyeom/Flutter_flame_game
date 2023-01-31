@@ -8,6 +8,10 @@ How to control the game: drag play<br/><br/>
 
 ***
 
+https://user-images.githubusercontent.com/13028129/215684893-a80a1991-7fb0-413f-aebd-c7ae0006b949.mp4
+
+***
+
 다음 블로그를 참고하여 Flutter flame 게임 엔진을 학습 할 수 있습니다.<br/>
 
 ### my article
