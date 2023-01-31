@@ -1,8 +1,10 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
-import 'package:flame_game/game/my_game.dart';
+import 'package:flame_game/components/enemy.dart';
 
-class Bullet extends PositionComponent with HasGameRef<MyGame> {
+class Bullet extends PositionComponent
+    with CollisionCallbacks {
   final double _speed = 800;
 
   Bullet() {
@@ -24,6 +26,30 @@ class Bullet extends PositionComponent with HasGameRef<MyGame> {
   }
 
   @override
+  void onMount() {
+    super.onMount();
+
+    // player 객체 사이즈의 반지름 0.8배 작은 원형 히트박스 추가
+    final shape = CircleHitbox.relative(
+      0.8,
+      parentSize: size,
+      position: size / 2,
+      anchor: Anchor.center,
+    );
+    add(shape);
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+
+    // Enemy 충돌시
+    if (other is Enemy) {
+      destroy();
+    }
+  }
+
+  @override
   void update(double dt) {
     super.update(dt);
 
@@ -33,5 +59,9 @@ class Bullet extends PositionComponent with HasGameRef<MyGame> {
     if (position.y < 0) {
       removeFromParent();
     }
+  }
+
+  void destroy() {
+    removeFromParent();
   }
 }

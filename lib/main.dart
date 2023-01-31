@@ -1,14 +1,19 @@
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
+import 'package:flame_game/game/game_over_overlay.dart';
+import 'package:flame_game/game/game_overlay.dart';
+import 'package:flame_game/game/main_menu_overlay.dart';
 import 'package:flame_game/game/my_game.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await Flame.device.fullScreen();
+
   // 이미지 로드
-  await Flame.images
-      .loadAll(["Backgrounds.png", "Background_Grid.png", "Player.png", "Bullets.png"]);
+  await Flame.images.loadAll(
+      ["Backgrounds.png", "Background_Grid.png", "Player.png", "Bullets.png", "Boom.png"]);
 
   // runApp(MaterialApp(
   //   title: 'Flame Game',
@@ -21,6 +26,7 @@ void main() async {
 
   runApp(MaterialApp(
     title: 'Flame Game',
+    debugShowCheckedModeBanner: false,
     home: GameWrapper(MyGame()),
   ));
 }
@@ -31,7 +37,15 @@ class GameWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GameWidget(game: myGame);
+    return GameWidget(
+      game: myGame,
+      // overlay 위젯 등록
+      overlayBuilderMap: <String, Widget Function(BuildContext, Game)>{
+        'gameOverlay': (context, game) => GameOverlay(game),
+        'mainMenuOverlay': (context, game) => MainMenuOverlay(game),
+        'gameOverOverlay': (context, game) => GameOverOverlay(game),
+      },
+    );
   }
 }
 

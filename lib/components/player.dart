@@ -1,12 +1,16 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/flame.dart';
 import 'package:flame_game/components/bullet.dart';
+import 'package:flame_game/components/enemies_bullet.dart';
+import 'package:flame_game/components/enemy.dart';
 import 'package:flame_game/game/my_game.dart';
 
-enum PlayerDirection { go, left, right }
+enum PlayerDirection { go, left, right, boom }
 
-class Player extends PositionComponent with DragCallbacks, HasGameRef<MyGame> {
+class Player extends PositionComponent
+    with DragCallbacks, CollisionCallbacks, HasGameRef<MyGame> {
   late final PlayerComponent _playerComponent;
   bool _isDragging = false;
 
@@ -16,6 +20,7 @@ class Player extends PositionComponent with DragCallbacks, HasGameRef<MyGame> {
           anchor: Anchor.center,
         ) {
     var playerImage = Flame.images.fromCache("Player.png");
+    var boomImage = Flame.images.fromCache("Boom.png");
 
     List<Sprite> spritesGo = [
       Sprite(playerImage, srcPosition: Vector2(0, 0), srcSize: Vector2(24, 24)),
@@ -49,17 +54,28 @@ class Player extends PositionComponent with DragCallbacks, HasGameRef<MyGame> {
           srcPosition: Vector2(76, 25), srcSize: Vector2(24, 24)),
     ];
 
+    List<Sprite> spriteBoom = [
+      Sprite(boomImage, srcPosition: Vector2(0, 0), srcSize: Vector2(72, 72)),
+      Sprite(boomImage, srcPosition: Vector2(74, 0), srcSize: Vector2(72, 72)),
+      Sprite(boomImage, srcPosition: Vector2(146, 0), srcSize: Vector2(72, 72)),
+    ];
+
     var animatedPlayer_go =
         SpriteAnimation.spriteList(spritesGo, stepTime: 0.15);
     var animatedPlayer_left =
         SpriteAnimation.spriteList(spritesLeft, stepTime: 0.15);
     var animatedPlayer_right =
         SpriteAnimation.spriteList(spritesRight, stepTime: 0.15);
+    var animatedBoom =
+        SpriteAnimation.spriteList(spriteBoom, stepTime: 0.15, loop: false);
+    // 플레이어가 죽고 Boom 애니메이션 종료 후 객체 제거
+    animatedBoom.onComplete = () => destroy();
 
     _playerComponent = PlayerComponent<PlayerDirection>({
       PlayerDirection.go: animatedPlayer_go,
       PlayerDirection.left: animatedPlayer_left,
-      PlayerDirection.right: animatedPlayer_right
+      PlayerDirection.right: animatedPlayer_right,
+      PlayerDirection.boom: animatedBoom,
     });
     _playerComponent.current = PlayerDirection.go;
     add(_playerComponent);
@@ -68,29 +84,72 @@ class Player extends PositionComponent with DragCallbacks, HasGameRef<MyGame> {
   double bulletTime = 0;
 
   @override
+  void onMount() {
+    super.onMount();
+
+    // player 객체 사이즈의 반지름 0.8배 작은 원형 히트박스 추가
+    final shape = CircleHitbox.relative(
+      0.8,
+      parentSize: size,
+      position: size / 2,
+      anchor: Anchor.center,
+    );
+    add(shape);
+  }
+
+  @override
   void update(double dt) {
     super.update(dt);
 
+    if (_playerComponent.current == PlayerDirection.boom) {
+      return;
+    }
+
     bulletTime += dt;
+    // 0.3초 마다 한번씩 발사
     if (bulletTime < 0.3) return;
     bulletTime = 0;
 
     Bullet bullet = Bullet()
+      // Bullet의 사이즈 설정
       ..size = Vector2(19, 25)
+      // Bullet의 위치 설정
       ..position = position.clone()
+      // Bullet의 기준점 설정
       ..anchor = Anchor.center;
     gameRef.add(bullet);
   }
 
   @override
   void onDragStart(DragStartEvent event) {
+    if (_playerComponent.current == PlayerDirection.boom) {
+      _isDragging = false;
+      return;
+    }
+
     _isDragging = true;
-    priority = 100;
   }
 
   @override
   void onDragUpdate(DragUpdateEvent event) {
     if (!_isDragging) {
+      return;
+    }
+
+    if (_playerComponent.current == PlayerDirection.boom) {
+      _isDragging = false;
+      return;
+    }
+
+    // 상단 범위 초과 금지
+    if (position.y <= 100) {
+      position.y += 10;
+      return;
+    }
+
+    // 하단 범위 초과 금지
+    if (position.y >= gameRef.size[1] - 70) {
+      position.y -= 10;
       return;
     }
 
@@ -120,10 +179,16 @@ class Player extends PositionComponent with DragCallbacks, HasGameRef<MyGame> {
     }
     // 드래그 방향에 따라 이동
     position.x += event.delta.x;
+    position.y += event.delta.y;
   }
 
   @override
   void onDragEnd(DragEndEvent event) {
+    if (_playerComponent.current == PlayerDirection.boom) {
+      _isDragging = false;
+      return;
+    }
+
     if (!_isDragging) {
       return;
     }
@@ -132,12 +197,26 @@ class Player extends PositionComponent with DragCallbacks, HasGameRef<MyGame> {
     _playerComponent.current = PlayerDirection.go;
   }
 
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+
+    // Enemy or EnemiesBullet 충돌시
+    if (other is Enemy || other is EnemiesBullet) {
+      _playerComponent.current = PlayerDirection.boom;
+    }
+  }
+
   void playerUpdate(PlayerDirection playerDirection) {
     _playerComponent.playerUpdate(playerDirection);
   }
 
   void setPosition(Vector2 position) {
     _playerComponent.position = position;
+  }
+
+  void destroy() {
+    removeFromParent();
   }
 }
 
