@@ -1,7 +1,10 @@
 # Flutter_flame_game
 
 flame 미니멀리스트 게임 엔진을 사용한 간단한 2D 게임 입니다.<br/>
-조작은 마우스로 드래그 해서 플레이 할 수 있습니다.
+조작은 마우스로 드래그 해서 플레이 할 수 있습니다.<br/><br/>
+
+A simple 2D game using the Flutter flame game engine.<br/>
+How to control the game: drag play<br/><br/>
 
 ***
 
