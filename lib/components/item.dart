@@ -1,13 +1,16 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/flame.dart';
+import 'package:flame/image_composition.dart';
 import 'package:flame_game/components/player.dart';
 import 'package:flame_game/game/my_game.dart';
 
-abstract class Item extends SpriteComponent
+abstract class Item extends SpriteAnimationComponent
     with CollisionCallbacks, HasGameRef<MyGame> {
-  int bulletPowerPoint = 10;
+  int bulletPowerPoint = 0;
   final double _speed = 150;
   final Vector2 _moveDirection = Vector2(0, 1);
+  final Image itemImage = Flame.images.fromCache("Items.png");
 
   @override
   void onMount() {
@@ -62,13 +65,35 @@ class PowerUpgradeItem extends Item {
     size = Vector2(20, 20);
     // 파워 +5
     bulletPowerPoint += 5;
+
+    List<Sprite> spritePowerUpItem = [
+      Sprite(super.itemImage,
+          srcPosition: Vector2(0, 4), srcSize: Vector2(16, 8)),
+      Sprite(super.itemImage,
+          srcPosition: Vector2(17, 2), srcSize: Vector2(16, 10)),
+      Sprite(super.itemImage,
+          srcPosition: Vector2(34, 2), srcSize: Vector2(16, 10)),
+      Sprite(super.itemImage,
+          srcPosition: Vector2(51, 2), srcSize: Vector2(16, 10)),
+      Sprite(super.itemImage,
+          srcPosition: Vector2(68, 2), srcSize: Vector2(16, 12)),
+      Sprite(super.itemImage,
+          srcPosition: Vector2(85, 4), srcSize: Vector2(16, 10)),
+      Sprite(super.itemImage,
+          srcPosition: Vector2(102, 4), srcSize: Vector2(16, 10)),
+      Sprite(super.itemImage,
+          srcPosition: Vector2(119, 4), srcSize: Vector2(16, 10)),
+      Sprite(super.itemImage,
+          srcPosition: Vector2(136, 4), srcSize: Vector2(16, 8)),
+    ];
+
+    var itemAnimation =
+        SpriteAnimation.spriteList(spritePowerUpItem, stepTime: 0.15);
+    animation = itemAnimation;
   }
 
   @override
   Future<void>? onLoad() async {
-    // 기본 이미지
-    var powerUpgradeItemSprite = await gameRef.loadSprite("Items.png",
-        srcPosition: Vector2(68, 2), srcSize: Vector2(16, 12));
-    sprite = powerUpgradeItemSprite;
+    await super.onLoad();
   }
 }

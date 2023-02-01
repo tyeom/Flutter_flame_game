@@ -12,8 +12,14 @@ void main() async {
   await Flame.device.fullScreen();
 
   // 이미지 로드
-  await Flame.images.loadAll(
-      ["Backgrounds.png", "Background_Grid.png", "Player.png", "Bullets.png", "Boom.png"]);
+  await Flame.images.loadAll([
+    "Backgrounds.png",
+    "Background_Grid.png",
+    "Player.png",
+    "Bullets.png",
+    "Boom.png",
+    "Items.png",
+  ]);
 
   // runApp(MaterialApp(
   //   title: 'Flame Game',
